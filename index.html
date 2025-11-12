@@ -180,7 +180,7 @@
       shapes: ['circle', 'triangle', 'square', 'diamond'],
       
       // Trials
-      trialsPerCondition: 10,
+      trialsPerCondition: 15,
       
       // Memory task
       memoryGridSize: 4, // 4x4 grid
@@ -206,6 +206,17 @@
       memoryLoad: ['with-memory', 'without-memory']
     };
 
+    // Between-subjects random assignment of viewCondition
+    // Each participant will only experience one of the three conditions
+    const assignedViewCondition = jsPsych.randomization.sampleWithoutReplacement(
+      factors.viewCondition, 1
+    )[0];
+    
+    // Record the assigned view condition in experimental data
+    jsPsych.data.addProperties({
+      assigned_view_condition: assignedViewCondition
+    });
+
     // Track mouse movements
     let mouseX = 0;
     let mouseY = 0;
@@ -229,7 +240,7 @@
 
     // Trial progress tracking variables
     let currentMainTrialNumber = 0;
-    const totalMainTrials = 120; // 3 viewConditions × 2 structures × 10 trialsPerCondition × 2 blocks
+    const totalMainTrials = 60; // 1 viewCondition × 2 structures × 15 trialsPerCondition × 2 blocks
 
     // Welcome screen
     const welcome = {
@@ -535,57 +546,58 @@
         html += '</div>';
         html += '</div>';
 
-        // 3 viewing conditions with random selection emphasis
+        // Display condition-specific explanation
         html += '<div style="margin-bottom: 30px;">';
         html += '<h2 style="color: #dc3545; font-size: 22px; margin-bottom: 20px;">【ステップ3】図形探索</h2>';
-        html += '<div style="background-color: #fff8dc; border: 3px dashed #ffa500; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">';
-        html += '<h3 style="color: #ff6600; margin: 0; font-size: 20px;">重要：「全画面条件」「ウィンドウ条件」「スクロール条件」のどれかがランダムで表示されます。</h3>';
-        html += '<p style="font-size: 16px; margin: 10px 0; color: #ff6600;">どの条件が出るかは予測できません。</p>';
-        html += '</div>';
         
-        // Fullscreen condition
-        html += '<div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 20px;">全画面条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 画面全体に図形が表示されます</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> 覚えた図形を見つけてクリックします</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto;">';
-        html += '<img src="screen_shots/2_fullscreen.png" alt="全画面条件の例" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        // Get assigned view condition and display appropriate explanation
+        const viewCondition = assignedViewCondition;
         
-        // Window condition
-        html += '<div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 20px;">ウィンドウ条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして窓を移動させながら探します</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
-        html += '<img src="screen_shots/3_window_initial.png" alt="ウィンドウ条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '<img src="screen_shots/4_window_after_move.png" alt="ウィンドウ条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
-        
-        // Scroll condition
-        html += '<div style="background-color: #f3e5f5; border: 2px solid #9c27b0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #7b1fa2; margin: 0 0 15px 0; font-size: 20px;">スクロール条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして背景をスクロールしながら探します</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
-        html += '<img src="screen_shots/5_scroll_initial.png" alt="スクロール条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '<img src="screen_shots/6_scroll_after_move.png" alt="スクロール条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        if (viewCondition === 'fullscreen') {
+          // Fullscreen condition
+          html += '<div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 20px;">全画面条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 画面全体に図形が表示されます</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> 覚えた図形を見つけてクリックします</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto;">';
+          html += '<img src="screen_shots/2_fullscreen.png" alt="全画面条件の例" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        } else if (viewCondition === 'window') {
+          // Window condition
+          html += '<div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 20px;">ウィンドウ条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして窓を移動させながら探します</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
+          html += '<img src="screen_shots/3_window_initial.png" alt="ウィンドウ条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '<img src="screen_shots/4_window_after_move.png" alt="ウィンドウ条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        } else if (viewCondition === 'scroll') {
+          // Scroll condition
+          html += '<div style="background-color: #f3e5f5; border: 2px solid #9c27b0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #7b1fa2; margin: 0 0 15px 0; font-size: 20px;">スクロール条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして背景をスクロールしながら探します</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
+          html += '<img src="screen_shots/5_scroll_initial.png" alt="スクロール条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '<img src="screen_shots/6_scroll_after_move.png" alt="スクロール条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        }
         html += '</div>';
 
         // Memory recall with larger image
@@ -676,57 +688,58 @@
         html += '</div>';
         html += '</div>';
 
-        // 3 viewing conditions with random selection emphasis
+        // Display condition-specific explanation
         html += '<div style="margin-bottom: 30px;">';
         html += '<h2 style="color: #dc3545; font-size: 22px; margin-bottom: 20px;">【ステップ2】図形探索</h2>';
-        html += '<div style="background-color: #fff8dc; border: 3px dashed #ffa500; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">';
-        html += '<h3 style="color: #ff6600; margin: 0; font-size: 20px;">重要：「全画面条件」「ウィンドウ条件」「スクロール条件」のどれかがランダムで表示されます。</h3>';
-        html += '<p style="font-size: 16px; margin: 10px 0; color: #ff6600;">どの条件が出るかは予測できません。</p>';
-        html += '</div>';
         
-        // Fullscreen condition
-        html += '<div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 20px;">全画面条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 画面全体に図形が表示されます</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> 覚えた図形を探してクリックします</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto;">';
-        html += '<img src="screen_shots/2_fullscreen.png" alt="全画面条件の例" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        // Get assigned view condition and display appropriate explanation
+        const viewCondition = assignedViewCondition;
         
-        // Window condition
-        html += '<div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 20px;">ウィンドウ条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして窓を移動させながら探します</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
-        html += '<img src="screen_shots/3_window_initial.png" alt="ウィンドウ条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '<img src="screen_shots/4_window_after_move.png" alt="ウィンドウ条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
-        
-        // Scroll condition
-        html += '<div style="background-color: #f3e5f5; border: 2px solid #9c27b0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
-        html += '<h3 style="color: #7b1fa2; margin: 0 0 15px 0; font-size: 20px;">スクロール条件</h3>';
-        html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
-        html += '<div style="flex: 1; min-width: 300px;">';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
-        html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして背景をスクロールしながら探します</p>';
-        html += '</div>';
-        html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
-        html += '<img src="screen_shots/5_scroll_initial.png" alt="スクロール条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '<img src="screen_shots/6_scroll_after_move.png" alt="スクロール条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        if (viewCondition === 'fullscreen') {
+          // Fullscreen condition
+          html += '<div style="background-color: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #1976d2; margin: 0 0 15px 0; font-size: 20px;">全画面条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 画面全体に図形が表示されます</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> 覚えた図形を探してクリックします</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto;">';
+          html += '<img src="screen_shots/2_fullscreen.png" alt="全画面条件の例" style="max-width: 350px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        } else if (viewCondition === 'window') {
+          // Window condition
+          html += '<div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #f57c00; margin: 0 0 15px 0; font-size: 20px;">ウィンドウ条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして窓を移動させながら探します</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
+          html += '<img src="screen_shots/3_window_initial.png" alt="ウィンドウ条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '<img src="screen_shots/4_window_after_move.png" alt="ウィンドウ条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        } else if (viewCondition === 'scroll') {
+          // Scroll condition
+          html += '<div style="background-color: #f3e5f5; border: 2px solid #9c27b0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">';
+          html += '<h3 style="color: #7b1fa2; margin: 0 0 15px 0; font-size: 20px;">スクロール条件</h3>';
+          html += '<div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">';
+          html += '<div style="flex: 1; min-width: 300px;">';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>表示：</strong> 小さな窓から図形を観察します</p>';
+          html += '<p style="margin: 8px 0; font-size: 16px;"><strong>操作：</strong> マウスをドラッグして背景をスクロールしながら探します</p>';
+          html += '</div>';
+          html += '<div style="flex: 0 0 auto; display: flex; gap: 15px;">';
+          html += '<img src="screen_shots/5_scroll_initial.png" alt="スクロール条件（初期）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '<img src="screen_shots/6_scroll_after_move.png" alt="スクロール条件（移動後）" style="max-width: 200px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
+          html += '</div>';
+          html += '</div>';
+          html += '</div>';
+        }
         html += '</div>';
         
         // Final emphasis on repetition and speed/accuracy
@@ -889,7 +902,7 @@
     const visualSearchInstructions = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: function() {
-        const viewCondition = jsPsych.timelineVariable('viewCondition');
+        const viewCondition = assignedViewCondition; // Use assigned condition instead of timeline variable
         const isPractice = jsPsych.timelineVariable('isPractice') || false;
         
         // Generate progress display for main trials only
@@ -1176,8 +1189,8 @@
         task: 'visual_search'
       },
       on_load: function() {
-        // Get trial parameters
-        const viewCondition = jsPsych.timelineVariable('viewCondition');
+        // Get trial parameters - use assigned view condition instead of timeline variable
+        const viewCondition = assignedViewCondition;
         const structure = jsPsych.timelineVariable('structure');
         
         // Capture memory load and practice variables early to ensure they are accessible
@@ -1912,46 +1925,36 @@
 
 
     // Counterbalancing logic for memory load conditions (moved earlier to determine practice trial structure)
-    // Uses cognition.run CONDITION variable or falls back to random assignment for local testing
-    let memoryFirstCondition = false; // Default: without-memory first, with-memory second
-    
-    if (typeof CONDITION !== 'undefined') {
-      // cognition.run environment - use CONDITION variable for counterbalancing
-      // CONDITION should be 0 or 1 (or other even/odd assignment)
-      memoryFirstCondition = (CONDITION % 2 === 1);
-      console.log('cognition.run CONDITION detected:', CONDITION, 'Memory first:', memoryFirstCondition);
-    } else {
-      // Local testing environment - use random assignment
-      memoryFirstCondition = Math.random() < 0.5;
-      console.log('Local testing - random assignment. Memory first:', memoryFirstCondition);
-    }
+    // No longer using cognition.run CONDITION variable - random assignment only
+    let memoryFirstCondition = Math.random() < 0.5;
+    console.log('Random assignment. Memory first:', memoryFirstCondition);
 
     // Generate practice trial variables based on memory condition
-    // Reduced to 3 trials (one trial per viewing condition)
-    // Memory load depends on whether memory tasks are in the first block
+    // 3 trials total, all using the assigned view condition with structured placement
     const practiceMemoryLoad = memoryFirstCondition ? 'with-memory' : 'without-memory';
     
     const practiceTrialVariables = [
-      { viewCondition: 'fullscreen', structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true },
-      { viewCondition: 'window', structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true },
-      { viewCondition: 'scroll', structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true }
+      { viewCondition: assignedViewCondition, structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true },
+      { viewCondition: assignedViewCondition, structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true },
+      { viewCondition: assignedViewCondition, structure: 'structured', memoryLoad: practiceMemoryLoad, isPractice: true }
     ];
 
-    // Create separate factorial designs for with-memory and without-memory conditions
-    const viewAndStructureFactors = {
-      viewCondition: ['window', 'scroll', 'fullscreen'],
+    // Create factorial design for structure only (viewCondition is fixed to assigned condition)
+    const structureFactors = {
       structure: ['structured', 'unstructured']
     };
     
     // Generate trial designs for both memory conditions
-    const withoutMemoryDesign = jsPsych.randomization.factorial(viewAndStructureFactors, params.trialsPerCondition);
+    const withoutMemoryDesign = jsPsych.randomization.factorial(structureFactors, params.trialsPerCondition);
     withoutMemoryDesign.forEach(trial => {
+      trial.viewCondition = assignedViewCondition; // Use assigned view condition
       trial.memoryLoad = 'without-memory';
       trial.isPractice = false;
     });
     
-    const withMemoryDesign = jsPsych.randomization.factorial(viewAndStructureFactors, params.trialsPerCondition);
+    const withMemoryDesign = jsPsych.randomization.factorial(structureFactors, params.trialsPerCondition);
     withMemoryDesign.forEach(trial => {
+      trial.viewCondition = assignedViewCondition; // Use assigned view condition
       trial.memoryLoad = 'with-memory';
       trial.isPractice = false;
     });
@@ -1970,11 +1973,11 @@
 
     // Record counterbalancing assignment in experimental data
     jsPsych.data.addProperties({
-      counterbalancing_condition: typeof CONDITION !== 'undefined' ? CONDITION : 'local_random',
+      counterbalancing_condition: 'random',
       memory_first_block: memoryFirstCondition,
       block1_memory_load: memoryFirstCondition ? 'with-memory' : 'without-memory',
       block2_memory_load: memoryFirstCondition ? 'without-memory' : 'with-memory',
-      assignment_source: typeof CONDITION !== 'undefined' ? 'cognition_run' : 'local_testing'
+      assignment_source: 'random'
     });
     
     // Build timeline procedure for a single trial

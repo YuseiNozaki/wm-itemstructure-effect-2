@@ -184,7 +184,7 @@
       
       // Memory task
       memoryGridSize: 4, // 4x4 grid
-      memoryPositions: 3, // Number of positions to remember
+      memoryPositions: 4, // Number of positions to remember
     };
 
     // Generate random object size within the specified range
@@ -868,7 +868,7 @@
         html += '<div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">';
         html += '<div style="flex: 1; min-width: 200px;">';
         html += '<p style="font-size: 15px; margin: 5px 0; color: #856404;"><strong>1. 記憶課題（3秒間）</strong></p>';
-        html += '<p style="font-size: 14px; margin: 5px 0; color: #856404;">色がついている3箇所の位置を覚える</p>';
+        html += '<p style="font-size: 14px; margin: 5px 0; color: #856404;">色がついている4箇所の位置を覚える</p>';
         html += '</div>';
         html += '<div style="flex: 0 0 auto;">';
         html += '<img src="screen_shots/7_memory_task_presentation.png" alt="記憶課題の表示" style="max-width: 300px; height: auto; border: 2px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">';
@@ -1028,7 +1028,7 @@
         gridHTML += '</div>';
         gridHTML += '<button id="memory-reset-btn" class="memory-reset-btn">リセット</button>';
         gridHTML += '<button id="memory-submit-btn" class="memory-submit-btn" disabled>決定</button>';
-        gridHTML += '<p id="selection-info">3つのセルを選択してください。</p>';
+        gridHTML += '<p id="selection-info">4つのセルを選択してください。</p>';
         
         return gridHTML;
       },

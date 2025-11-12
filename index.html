@@ -910,7 +910,29 @@
         if (!isPractice) {
           // Increment trial counter for main trials
           currentMainTrialNumber++;
-          progressDisplay = `<p style="font-size: 16px; margin: 10px 0; font-weight: bold; color: #007bff;">${currentMainTrialNumber}回/${totalMainTrials}回</p>`;
+          
+          // Calculate current search task statistics (excluding practice trials)
+          const searchData = jsPsych.data.get().filter({task: 'visual_search', is_practice: false});
+          let accuracyText = '';
+          let avgSpeedText = '';
+          
+          if (searchData.count() > 0) {
+            // Calculate accuracy percentage
+            const correctSearches = searchData.filter({correct: true}).count();
+            const accuracy = Math.round((correctSearches / searchData.count()) * 100);
+            accuracyText = `<p style="font-size: 16px; margin: 5px 0; color: #333;">現在の成績：${accuracy}%正解</p>`;
+            
+            // Calculate average response time
+            const searchTimes = searchData.select('reaction_time').values;
+            const validTimes = searchTimes.filter(time => time != null && !isNaN(time) && time > 0);
+            if (validTimes.length > 0) {
+              const avgTime = validTimes.reduce((a, b) => a + b, 0) / validTimes.length;
+              const avgTimeSec = (avgTime / 1000).toFixed(2); // 2 decimal places
+              avgSpeedText = `<p style="font-size: 16px; margin: 5px 0; color: #333;">現在の平均スピード：${avgTimeSec}秒</p>`;
+            }
+          }
+          
+          progressDisplay = `<p style="font-size: 16px; margin: 10px 0; font-weight: bold; color: #007bff;">${currentMainTrialNumber}回/${totalMainTrials}回</p>${accuracyText}${avgSpeedText}`;
         }
         
         return `
@@ -1760,8 +1782,23 @@
         const memoryData = jsPsych.data.get().filter({task: 'memory_recall'}).last(1).values()[0];
         const correct = memoryData.memory_correct === 1;
         
+        // Calculate current memory task accuracy (excluding practice trials)
+        let memoryAccuracyText = '';
+        const allMemoryData = jsPsych.data.get().filter({task: 'memory_recall', is_practice: false});
+        
+        if (allMemoryData.count() > 0) {
+          const memoryScores = allMemoryData.select('memory_correct').values;
+          const validScores = memoryScores.filter(score => score !== undefined && score !== null);
+          if (validScores.length > 0) {
+            const avgAccuracy = validScores.reduce((a, b) => a + b, 0) / validScores.length;
+            const accuracyPercent = Math.round(avgAccuracy * 100);
+            memoryAccuracyText = `<p style="font-size: 16px; margin: 15px 0; color: #333;">現在の記憶課題の成績：${accuracyPercent}%正解</p>`;
+          }
+        }
+        
         return `
           <h1>${correct ? '正解!' : '不正解'}</h1>
+          ${memoryAccuracyText}
           <p>下の「次へ」ボタンをクリックして次に進みます。</p>
           <div style="margin: 20px 0;">
             <button id="memory-feedback-next-btn" style="padding: 12px 24px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">次へ</button>

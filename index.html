@@ -378,25 +378,11 @@
         html += '<div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: left; line-height: 1.6;">';
         html += '<h4 style="color: #495057; margin-top: 0; margin-bottom: 15px;">個人情報の取り扱いについて</h4>';
         html += '<ul style="margin: 0; padding-left: 20px; color: #6c757d;">';
-        html += '<li style="margin-bottom: 8px;"><strong>氏名・メールアドレス</strong>は謝礼のお支払い目的のみに利用し、実験データとは分離して管理いたします。</li>';
-        html += '<li style="margin-bottom: 0;">謝礼のお支払いのため、入力いただいたアドレスに後日ご連絡いたします。</li>';
+        html += '<li style="margin-bottom: 0;">入力いただいた情報は実験データとともに適切に管理いたします。</li>';
         html += '</ul>';
         html += '</div>';
         
         html += '<form id="demographics-form" style="margin: 20px 0;">';
-        
-        // Name field
-        html += '<div style="margin: 20px 0; text-align: left;">';
-        html += '<label for="name-input" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold;">氏名 <span style="color: #dc3545;">*</span></label>';
-        html += '<input type="text" id="name-input" name="name" required style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; box-sizing: border-box;" placeholder="お名前を入力してください">';
-        html += '</div>';
-        
-        // Email field
-        html += '<div style="margin: 20px 0; text-align: left;">';
-        html += '<label for="email-input" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold;">メールアドレス <span style="color: #dc3545;">*</span></label>';
-        html += '<input type="email" id="email-input" name="email" required style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; box-sizing: border-box;" placeholder="example@example.com">';
-        html += '<small style="color: #6c757d; font-size: 14px; display: block; margin-top: 5px;">r241004y@st.u-gakugei.ac.jp からの連絡を受信できるアドレスをご入力ください</small>';
-        html += '</div>';
         
         // Age field
         html += '<div style="margin: 20px 0; text-align: left;">';
@@ -440,37 +426,13 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           
-          const nameInput = document.getElementById('name-input');
-          const emailInput = document.getElementById('email-input');
           const ageSelect = document.getElementById('age-select');
           const genderSelect = document.getElementById('gender-select');
           
-          const name = nameInput.value.trim();
-          const email = emailInput.value.trim();
           const age = ageSelect.value;
           const gender = genderSelect.value;
           
           // Validate all fields
-          if (!name) {
-            alert('氏名を入力してください。');
-            nameInput.focus();
-            return;
-          }
-          
-          if (!email) {
-            alert('メールアドレスを入力してください。');
-            emailInput.focus();
-            return;
-          }
-          
-          // Basic email validation
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(email)) {
-            alert('有効なメールアドレスを入力してください。');
-            emailInput.focus();
-            return;
-          }
-          
           if (!age) {
             alert('年齢を選択してください。');
             ageSelect.focus();
@@ -485,16 +447,12 @@
           
           // Store all demographic data
           jsPsych.data.addProperties({
-            participant_name: name,
-            participant_email: email,
             age: age,
             gender: gender
           });
           
           // Finish the trial with the collected data
           jsPsych.finishTrial({
-            participant_name: name,
-            participant_email: email,
             age: age,
             gender: gender
           });

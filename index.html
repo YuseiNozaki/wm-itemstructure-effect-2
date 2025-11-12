@@ -915,13 +915,6 @@
         
         return `
           ${progressDisplay}
-          <p>次は<strong>${viewCondition === 'window' ? 'ウィンドウ条件' : 
-            viewCondition === 'scroll' ? 'スクロール条件' : '全画面条件'}</strong></p>
-          <p>${viewCondition === 'window' ? 
-            'ウィンドウをドラッグで動かして探索します。' : 
-            viewCondition === 'scroll' ? 
-            '背景をスクロールして探索します。' : 
-            '全画面で探索をします'}</p>
           <p><strong>下の「次へ」ボタンをクリックして開始します。</strong></p>
           <div style="margin: 20px 0;">
             <button id="visual-search-next-btn" style="padding: 12px 24px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">次へ</button>

@@ -2083,7 +2083,10 @@
             return jsPsych.timelineVariable('memoryLoad') === 'with-memory';
           },
           data: {
-            task: 'memory_recall'
+            task: 'memory_recall',
+            is_practice: function() {
+              return jsPsych.timelineVariable('isPractice') || false;
+            }
           }
         },
         // Memory feedback only for 'with-memory' condition
@@ -2133,7 +2136,10 @@
             return jsPsych.timelineVariable('memoryLoad') === 'with-memory';
           },
           data: {
-            task: 'memory_recall'
+            task: 'memory_recall',
+            is_practice: function() {
+              return jsPsych.timelineVariable('isPractice') || false;
+            }
           }
         },
         // Memory feedback only for 'with-memory' condition

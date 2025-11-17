@@ -481,7 +481,105 @@
         });
       },
       on_finish: function() {
-        // After demographics are complete, activate fullscreen
+        // Fullscreen activation moved to check page
+      }
+    };
+
+    // Check page for verifying participation conditions
+    const checkPage = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        let html = '<div style="max-width: 700px; margin: 0 auto; padding: 20px; text-align: center; font-family: \'Noto Sans JP\', \'ヒラギノ角ゴ Pro\', \'Hiragino Kaku Gothic Pro\', \'メイリオ\', Meiryo, sans-serif;">';
+        html += '<h2 style="margin-bottom: 30px; color: #333;">参加条件の確認</h2>';
+        
+        // Information box
+        html += '<div style="background-color: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: left; line-height: 1.6;">';
+        html += '<p style="margin: 0; font-size: 16px; color: #856404;">以下の条件をすべて満たしていることを確認してください。</p>';
+        html += '</div>';
+        
+        // Checkboxes
+        html += '<div style="text-align: left; margin: 20px 0;">';
+        
+        // Checkbox 1
+        html += '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">';
+        html += '<label style="display: flex; align-items: flex-start; cursor: pointer; font-size: 16px;">';
+        html += '<input type="checkbox" id="check-1" class="check-item" style="margin-right: 10px; margin-top: 3px; transform: scale(1.3); cursor: pointer;"> ';
+        html += '<span>スマートフォンやタブレット端末ではなく、パソコンで参加しています</span>';
+        html += '</label>';
+        html += '</div>';
+        
+        // Checkbox 2
+        html += '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">';
+        html += '<label style="display: flex; align-items: flex-start; cursor: pointer; font-size: 16px;">';
+        html += '<input type="checkbox" id="check-2" class="check-item" style="margin-right: 10px; margin-top: 3px; transform: scale(1.3); cursor: pointer;"> ';
+        html += '<span>画面タッチではなく、マウスやタッチパッドなどで操作しています</span>';
+        html += '</label>';
+        html += '</div>';
+        
+        // Checkbox 3
+        html += '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">';
+        html += '<label style="display: flex; align-items: flex-start; cursor: pointer; font-size: 16px;">';
+        html += '<input type="checkbox" id="check-3" class="check-item" style="margin-right: 10px; margin-top: 3px; transform: scale(1.3); cursor: pointer;"> ';
+        html += '<span>集中して実験に取り組むことのできる場所で参加しています</span>';
+        html += '</label>';
+        html += '</div>';
+        
+        html += '</div>';
+        
+        // Next button
+        html += '<div style="margin: 30px 0; text-align: center;">';
+        html += '<button id="check-next-btn" disabled style="padding: 12px 30px; font-size: 16px; background-color: #ccc; color: #666; border: none; border-radius: 5px; cursor: not-allowed; font-weight: bold; transition: all 0.3s;">次へ進む</button>';
+        html += '</div>';
+        
+        html += '</div>';
+        
+        return html;
+      },
+      choices: "NO_KEYS",
+      on_load: function() {
+        // Ensure no fullscreen listeners are active during check page
+        removeFullscreenListeners();
+        
+        const checkboxes = document.querySelectorAll('.check-item');
+        const nextBtn = document.getElementById('check-next-btn');
+        
+        // Function to check if all checkboxes are checked
+        function updateButtonState() {
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          
+          if (allChecked) {
+            nextBtn.disabled = false;
+            nextBtn.style.backgroundColor = '#007bff';
+            nextBtn.style.color = 'white';
+            nextBtn.style.cursor = 'pointer';
+          } else {
+            nextBtn.disabled = true;
+            nextBtn.style.backgroundColor = '#ccc';
+            nextBtn.style.color = '#666';
+            nextBtn.style.cursor = 'not-allowed';
+          }
+        }
+        
+        // Add change event listeners to all checkboxes
+        checkboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', updateButtonState);
+        });
+        
+        // Add click event listener to the Next button
+        nextBtn.addEventListener('click', function() {
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          if (allChecked) {
+            // Record check page completion
+            jsPsych.data.addProperties({
+              check_page_completed: true,
+              check_page_timestamp: new Date().toISOString()
+            });
+            jsPsych.finishTrial();
+          }
+        });
+      },
+      on_finish: function() {
+        // After check page is complete, activate fullscreen
         setTimeout(() => {
           addFullscreenListeners();
           enterFullscreen();
@@ -2258,6 +2356,7 @@
       welcome,
       informedConsent,
       demographics,
+      checkPage,
       conditionalInitialExplanation,
       conditionalInitialExplanationSecond,
       practiceProcedure,

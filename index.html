@@ -281,7 +281,7 @@
         html += '<li>実施場所：実験に集中できる環境で参加してください。</li>';
         html += '<li>所要時間：20分〜30分程度</li>';
         html += '<li>課題内容：ご自身のPCからアクセスしていただき、画面上に表示される特定の図形の場所を探す課題に、繰り返し取り組んでいただきます。</li>';
-        html += '<li>収集するデータ：性別、年齢、反応時間、課題の成績、カーソルの移動履歴</li>';
+        html += '<li>収集するデータ：ワーカー名、性別、年齢、反応時間、課題の成績、カーソルの移動履歴</li>';
         html += '</ul>';
         
         html += '<h3>3. 参加条件</h3>';
@@ -389,14 +389,21 @@
         
         html += '<form id="demographics-form" style="margin: 20px 0;">';
         
+        // Worker name field
+        html += '<div style="margin: 20px 0; text-align: left;">';
+        html += '<label for="worker-name" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold;">ワーカー名 <span style="color: #dc3545;">*</span></label>';
+        html += '<input type="text" id="worker-name" name="workerName" required style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; box-sizing: border-box;" placeholder="ワーカー名を入力してください">';
+        html += '</div>';
+        
         // Age field
         html += '<div style="margin: 20px 0; text-align: left;">';
         html += '<label for="age-select" style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: bold;">年齢 <span style="color: #dc3545;">*</span></label>';
+        html += '<p style="margin: 5px 0 10px 0; font-size: 14px; color: #6c757d;">対象年齢：18歳〜39歳</p>';
         html += '<select id="age-select" name="age" required style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; box-sizing: border-box;">';
         html += '<option value="">選択してください</option>';
 
-        // Generate age options from 18 to 100
-        for (let i = 18; i <= 100; i++) {
+        // Generate age options from 18 to 39
+        for (let i = 18; i <= 39; i++) {
           html += `<option value="${i}">${i}</option>`;
         }
         
@@ -410,7 +417,7 @@
         html += '<option value="">選択してください</option>';
         html += '<option value="男性">男性</option>';
         html += '<option value="女性">女性</option>';
-        html += '<option value="その他">その他</option>';
+        html += '<option value="その他・答えたくない">その他・答えたくない</option>';
         html += '</select>';
         html += '</div>';
         
@@ -431,13 +438,21 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           
+          const workerNameInput = document.getElementById('worker-name');
           const ageSelect = document.getElementById('age-select');
           const genderSelect = document.getElementById('gender-select');
           
+          const workerName = workerNameInput.value.trim();
           const age = ageSelect.value;
           const gender = genderSelect.value;
           
           // Validate all fields
+          if (!workerName) {
+            alert('ワーカー名を入力してください。');
+            workerNameInput.focus();
+            return;
+          }
+          
           if (!age) {
             alert('年齢を選択してください。');
             ageSelect.focus();
@@ -452,12 +467,14 @@
           
           // Store all demographic data
           jsPsych.data.addProperties({
+            worker_name: workerName,
             age: age,
             gender: gender
           });
           
           // Finish the trial with the collected data
           jsPsych.finishTrial({
+            worker_name: workerName,
             age: age,
             gender: gender
           });

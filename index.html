@@ -1992,6 +1992,12 @@
               ${memoryAccuracyText}
             </div>
             
+            <div style="background-color: #e7f3ff; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: left;">
+              <h3 style="color: #0056b3; margin-bottom: 15px; text-align: center;">ご意見・ご感想</h3>
+              <p style="font-size: 16px; margin-bottom: 15px; color: #333; text-align: center;">この実験について、ご意見や気づいた点などがあれば、ご自由に記載ください。何もなければ空欄のままで構いません。</p>
+              <textarea id="experiment-comments" style="width: 100%; min-height: 120px; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: 'Noto Sans JP', 'ヒラギノ角ゴ Pro', 'Hiragino Kaku Gothic Pro', 'メイリオ', Meiryo, sans-serif; resize: vertical;" placeholder="ご意見やご感想をご記入ください（任意）"></textarea>
+            </div>
+            
             <div style="margin: 30px 0;">
               <button id="result-screen-next-btn" style="padding: 15px 30px; font-size: 18px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">次へ</button>
             </div>
@@ -2003,6 +2009,16 @@
         // Add click event listener to the Next button
         const nextBtn = document.getElementById('result-screen-next-btn');
         nextBtn.addEventListener('click', function() {
+          // Get the comments from the textarea
+          const commentsTextarea = document.getElementById('experiment-comments');
+          const comments = commentsTextarea ? commentsTextarea.value.trim() : '';
+          
+          // Store the comments in jsPsych data
+          jsPsych.data.addProperties({
+            experiment_comments: comments
+          });
+          
+          // Finish the trial
           jsPsych.finishTrial();
         });
       }

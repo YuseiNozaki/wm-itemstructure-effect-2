@@ -1450,6 +1450,84 @@
         // Start timer
         const startTime = performance.now();
         
+        // Add practice instruction display for window and scroll conditions
+        let instructionElement = null;
+        if (isPractice && (viewCondition === 'window' || viewCondition === 'scroll')) {
+          // Create instruction element
+          instructionElement = document.createElement('div');
+          instructionElement.id = 'practice-instruction';
+          instructionElement.style.position = 'fixed';
+          instructionElement.style.left = '50%';
+          instructionElement.style.transform = 'translateX(-50%)';
+          instructionElement.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+          instructionElement.style.padding = '20px 30px';
+          instructionElement.style.borderRadius = '10px';
+          instructionElement.style.border = '2px solid #007bff';
+          instructionElement.style.fontSize = '18px';
+          instructionElement.style.fontWeight = 'bold';
+          instructionElement.style.color = '#333';
+          instructionElement.style.zIndex = '100';
+          instructionElement.style.maxWidth = '800px';
+          instructionElement.style.textAlign = 'center';
+          instructionElement.style.lineHeight = '1.6';
+          instructionElement.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          instructionElement.style.transition = 'opacity 0.3s ease, top 0.3s ease, bottom 0.3s ease';
+          
+          // Set instruction text based on condition
+          if (viewCondition === 'window') {
+            instructionElement.textContent = 'マウスのボタンを押したまま、窓をドラッグすることで、窓を動かすことができます。ターゲットの図形を見つけたら、クリックしてください。';
+          } else if (viewCondition === 'scroll') {
+            instructionElement.textContent = 'マウスのボタンを押したまま、窓の外まで大きくドラッグすることで、窓の下にある画面全体を動かせます。ターゲットの図形を見つけたら、クリックしてください。';
+          }
+          
+          document.body.appendChild(instructionElement);
+          
+          // Function to update instruction position based on window overlap
+          function updateInstructionPosition() {
+            if (!instructionElement) return;
+            
+            const windowRect = searchWindow.getBoundingClientRect();
+            const instructionHeight = instructionElement.offsetHeight;
+            const screenHeight = window.innerHeight;
+            
+            // Default position: bottom of screen
+            const bottomPosition = 30;
+            const topPosition = 30;
+            
+            // Check if instruction at bottom would overlap with window
+            const instructionBottomY = screenHeight - bottomPosition - instructionHeight;
+            const windowBottomY = windowRect.bottom;
+            const windowTopY = windowRect.top;
+            
+            // If window overlaps with bottom position, move to top
+            if (instructionBottomY < windowBottomY && instructionBottomY + instructionHeight > windowTopY) {
+              instructionElement.style.top = topPosition + 'px';
+              instructionElement.style.bottom = 'auto';
+            } else {
+              instructionElement.style.bottom = bottomPosition + 'px';
+              instructionElement.style.top = 'auto';
+            }
+          }
+          
+          // Initial position
+          updateInstructionPosition();
+          
+          // Function to hide instruction
+          function hideInstruction() {
+            if (instructionElement) {
+              instructionElement.style.opacity = '0';
+            }
+          }
+          
+          // Function to show instruction
+          function showInstruction() {
+            if (instructionElement) {
+              updateInstructionPosition();
+              instructionElement.style.opacity = '1';
+            }
+          }
+        }
+        
         // Setup event listeners
         if (viewCondition === 'window') {
           // Window condition - drag to move the window
@@ -1479,6 +1557,11 @@
           lastMouseX = mouseX;
           lastMouseY = mouseY;
           currentDragDistance = 0; // Reset drag distance for new interaction
+          
+          // Hide instruction when drag starts
+          if (isPractice && instructionElement) {
+            hideInstruction();
+          }
           
           // Calculate offset between cursor and window position
           const searchWindow = document.getElementById('search-window');
@@ -1533,6 +1616,12 @@
         
         function endWindowDrag() {
           isMouseDown = false;
+          
+          // Show instruction when drag ends
+          if (isPractice && instructionElement) {
+            showInstruction();
+          }
+          
           // If there was significant drag, mark it to prevent immediate clicks
           if (currentDragDistance > 5) {
             justFinishedDrag = true;
@@ -1549,6 +1638,11 @@
           lastMouseX = mouseX;
           lastMouseY = mouseY;
           currentDragDistance = 0; // Reset drag distance for new interaction
+          
+          // Hide instruction when drag starts
+          if (isPractice && instructionElement) {
+            hideInstruction();
+          }
         }
         
         function dragBackground(e) {
@@ -1585,6 +1679,11 @@
         
         function endDrag() {
           isMouseDown = false;
+          
+          // Show instruction when drag ends
+          if (isPractice && instructionElement) {
+            showInstruction();
+          }
         }
         
         function checkSelection(e) {
@@ -1660,6 +1759,12 @@
           // Reset drag state
           isMouseDown = false;
           justFinishedDrag = false;
+          
+          // Remove practice instruction element if it exists
+          if (instructionElement && instructionElement.parentNode) {
+            instructionElement.parentNode.removeChild(instructionElement);
+            instructionElement = null;
+          }
           
           // Hide canvas and window immediately using direct style property
           canvas.style.display = 'none';

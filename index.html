@@ -1758,8 +1758,8 @@
           justFinishedDrag = false;
           
           // Remove practice instruction element if it exists
-          if (instructionElement && instructionElement.parentNode) {
-            instructionElement.parentNode.removeChild(instructionElement);
+          if (instructionElement) {
+            instructionElement.remove();
             instructionElement = null;
           }
           

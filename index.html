@@ -1450,6 +1450,11 @@
         // Start timer
         const startTime = performance.now();
         
+        // Define instruction management functions in outer scope
+        let hideInstruction = function() {};
+        let showInstruction = function() {};
+        let updateInstructionPosition = function() {};
+        
         // Add practice instruction display for window and scroll conditions
         let instructionElement = null;
         if (isPractice && (viewCondition === 'window' || viewCondition === 'scroll')) {
@@ -1483,7 +1488,7 @@
           document.body.appendChild(instructionElement);
           
           // Function to update instruction position based on window overlap
-          function updateInstructionPosition() {
+          updateInstructionPosition = function() {
             if (!instructionElement) return;
             
             const windowRect = searchWindow.getBoundingClientRect();
@@ -1507,25 +1512,25 @@
               instructionElement.style.bottom = bottomPosition + 'px';
               instructionElement.style.top = 'auto';
             }
-          }
+          };
           
           // Initial position
           updateInstructionPosition();
           
           // Function to hide instruction
-          function hideInstruction() {
+          hideInstruction = function() {
             if (instructionElement) {
               instructionElement.style.opacity = '0';
             }
-          }
+          };
           
           // Function to show instruction
-          function showInstruction() {
+          showInstruction = function() {
             if (instructionElement) {
               updateInstructionPosition();
               instructionElement.style.opacity = '1';
             }
-          }
+          };
         }
         
         // Setup event listeners
@@ -1559,9 +1564,7 @@
           currentDragDistance = 0; // Reset drag distance for new interaction
           
           // Hide instruction when drag starts
-          if (isPractice && instructionElement) {
-            hideInstruction();
-          }
+          hideInstruction();
           
           // Calculate offset between cursor and window position
           const searchWindow = document.getElementById('search-window');
@@ -1618,9 +1621,7 @@
           isMouseDown = false;
           
           // Show instruction when drag ends
-          if (isPractice && instructionElement) {
-            showInstruction();
-          }
+          showInstruction();
           
           // If there was significant drag, mark it to prevent immediate clicks
           if (currentDragDistance > 5) {
@@ -1640,9 +1641,7 @@
           currentDragDistance = 0; // Reset drag distance for new interaction
           
           // Hide instruction when drag starts
-          if (isPractice && instructionElement) {
-            hideInstruction();
-          }
+          hideInstruction();
         }
         
         function dragBackground(e) {
@@ -1681,9 +1680,7 @@
           isMouseDown = false;
           
           // Show instruction when drag ends
-          if (isPractice && instructionElement) {
-            showInstruction();
-          }
+          showInstruction();
         }
         
         function checkSelection(e) {

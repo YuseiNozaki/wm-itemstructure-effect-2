@@ -30,7 +30,7 @@
       
       // Check for touch-only devices with small screens (likely mobile)
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const hasSmallScreen = window.screen.width < 768 || window.screen.height < 768;
+      const hasSmallScreen = window.screen.width < 768 && window.screen.height < 1024;
       
       // Return true if it's clearly a mobile or tablet
       if (mobilePattern.test(userAgent) || tabletPattern.test(userAgent)) {
@@ -66,7 +66,7 @@
         </div>
       `;
       // Prevent any further script execution
-      throw new Error('Mobile/Tablet device detected - experiment terminated');
+      throw new Error('Experiment access blocked: Mobile/Tablet device detected');
     }
 
     // Create required DOM elements for cognition.run deployment

@@ -17,6 +17,58 @@
 </head>
 <body>
   <script>
+    // Device detection - block mobile and tablet devices
+    function isMobileOrTablet() {
+      // Check user agent for common mobile/tablet indicators
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      
+      // Mobile device patterns (phones)
+      const mobilePattern = /Android.*Mobile|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      
+      // Tablet patterns
+      const tabletPattern = /iPad|Android(?!.*Mobile)|Tablet|PlayBook|Silk/i;
+      
+      // Check for touch-only devices with small screens (likely mobile)
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const hasSmallScreen = window.screen.width < 768 && window.screen.height < 1024;
+      
+      // Return true if it's clearly a mobile or tablet
+      if (mobilePattern.test(userAgent) || tabletPattern.test(userAgent)) {
+        return true;
+      }
+      
+      // Additional check: touch device with small screen is likely mobile
+      if (isTouchDevice && hasSmallScreen) {
+        return true;
+      }
+      
+      return false;
+    }
+
+    // Check device and show warning if mobile/tablet
+    if (isMobileOrTablet()) {
+      // Clear the body and show warning
+      document.body.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background-color: #f8f9fa;">
+          <div style="max-width: 600px; background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+            <h1 style="color: #dc3545; margin-bottom: 20px; font-size: 24px;">お使いの端末では参加できません</h1>
+            <p style="font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+              この実験はパソコンからのアクセスのみ対応しています。
+            </p>
+            <p style="font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+              <strong>パソコンから再度アクセスしてください。</strong>
+            </p>
+            <p style="font-size: 14px; color: #6c757d;">
+              ご協力ありがとうございました。
+            </p>
+          </div>
+        </div>
+      `;
+      // Prevent any further script execution
+      throw new Error('Experiment access blocked: Mobile/Tablet device detected');
+    }
+
     // Create required DOM elements for cognition.run deployment
     const targetDiv = document.createElement('div');
     targetDiv.id = 'jspsych-target';
